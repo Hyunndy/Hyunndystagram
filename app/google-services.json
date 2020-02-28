@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "366131386440",
+    "firebase_url": "https://hyunndystagram.firebaseio.com",
+    "project_id": "hyunndystagram",
+    "storage_bucket": "hyunndystagram.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366131386440:android:1afaef3a281ab05c65607d",
+        "android_client_info": {
+          "package_name": "com.example.hyunndystagram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366131386440-5iev7io84jmu0s10h6ca5ko74pq2svbn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkP_Fu5NRFkQ1H4Lc4RR4ZmBcNrNcwPf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366131386440-5iev7io84jmu0s10h6ca5ko74pq2svbn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
