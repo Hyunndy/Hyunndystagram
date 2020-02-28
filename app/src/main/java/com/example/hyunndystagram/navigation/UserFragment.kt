@@ -1,12 +1,14 @@
 package com.example.hyunndystagram.navigation
 
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,9 +18,11 @@ import com.example.hyunndystagram.LoginActivity
 import com.example.hyunndystagram.MainActivity
 import com.example.hyunndystagram.R
 import com.example.hyunndystagram.navigation.model.ContentDTO
+import com.example.hyunndystagram.navigation.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_user.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
@@ -118,6 +122,9 @@ class UserFragment : Fragment() {
     // @HYEONJIY: 내 계정인지 다른 사람 계정 상세페이지인지 구분
     private fun checkAccountMaster(view: View?) {
 
+        // 팔로우/팔로잉 UI 업데이트.
+        updateFollowersAndFollowing()
+
         // 만약 선택한 계정과 내 계정이 같다면
         if (selectedUseruid == currentUseruid) {
 
@@ -140,10 +147,10 @@ class UserFragment : Fragment() {
         }
         // 만약 다른이의 계정이라면..!
         else {
-            view?.account_btn_follow_signout?.text = getString(R.string.follow)
-
             // 팔로우 버튼을 눌렀을 때
-            //view.account_btn_follow_signout.setOnClickListener {}
+            view?.account_btn_follow_signout?.setOnClickListener {
+                requestFollow()
+            }
         }
     }
 
@@ -168,6 +175,111 @@ class UserFragment : Fragment() {
             if(documentSnapshot.data != null){
                 var url = documentSnapshot?.data!!["image"]
                 Glide.with(activity!!).load(url).into(fragmentView?.account_iv_profile!!)
+            }
+        }
+    }
+
+    // @HYEONJIY: 팔로우 버튼을 눌렀을 때 팔로우 할지/취소할지.
+    private fun requestFollow() {
+
+        // 1. 일단 내 계정의 팔로우 목록을 본다.
+        //------------------------------------------------------------------------------------------------------------
+        // Firebase DB의 users폴더에 document 중 currentUseruid있는 데이터 다 가져와!
+        var tsDocFollowing = firestore?.collection("users")?.document(currentUseruid!!)
+        firestore?.runTransaction{ transaction ->
+
+            // 가져온 데이터를 FollowDTO 오브젝트로 바꾼다.
+            var followDTO = transaction.get(tsDocFollowing!!).toObject(FollowDTO::class.java)
+
+            // 없다 == 나는 지금 팔로우 하고있는 사람이 없다 == 이 계정이 나의 첫번째 팔로우이다!
+            if(followDTO == null) {
+                followDTO = FollowDTO()
+                followDTO!!.followingCount = 1
+                followDTO!!.followings[selectedUseruid!!] = true
+
+                // Firebase DB에 이 내용을 넣어주고 돌아가자.
+                transaction.set(tsDocFollowing, followDTO)
+                return@runTransaction
+            }
+
+            // 내가 얘를 이미 팔로우 중일 때 -> 취소
+            if(followDTO.followings.containsKey(selectedUseruid)) {
+                followDTO?.followingCount = followDTO?.followingCount -1
+                followDTO?.followings?.remove(selectedUseruid)
+            }
+            // 팔로잉
+            else
+            {
+                followDTO?.followingCount = followDTO?.followingCount +1
+                followDTO?.followings[selectedUseruid!!] = true
+            }
+
+            transaction.set(tsDocFollowing, followDTO)
+            return@runTransaction
+        }
+
+        account_following_count
+        //------------------------------------------------------------------------------------------------------------
+
+        // 2. 상대방 계정의 팔로우 처리.
+        var tsDocFollower = firestore?.collection("users")?.document(selectedUseruid!!)
+        firestore?.runTransaction { transaction ->
+            var followDTO = transaction.get(tsDocFollower!!).toObject(FollowDTO::class.java)
+
+            // 없다 == 이 계정을 팔로우하는 사람이 없다 == 그렇다면 방금 Follow눌러준 사람이 처음이다!
+            if(followDTO == null){
+                followDTO = FollowDTO()
+                followDTO!!.followerCount = 1
+                followDTO!!.followers[currentUseruid!!] = true
+
+                transaction.set(tsDocFollower, followDTO!!)
+
+                // UI처리
+               // fragmentView?.account_follower_count?.text = 1.toString()
+
+                return@runTransaction
+            }
+
+            // 내가 지금 Follow버튼 누른사람을 이미 팔로워 목록에 가지고있었을 경우.. 그는 팔로우를 취소한것
+            if(followDTO!!.followers.containsKey(currentUseruid)) {
+                followDTO!!.followerCount = followDTO!!.followerCount -1
+                followDTO!!.followers?.remove(currentUseruid)
+            }
+            // 팔로우 추가!
+            else {
+                followDTO!!.followerCount = followDTO!!.followerCount +1
+                followDTO!!.followers[currentUseruid!!] = true
+            }
+
+            // UI처리
+           // fragmentView?.account_follower_count?.text = followDTO!!.followerCount.toString()
+
+            transaction.set(tsDocFollower, followDTO!!)
+            return@runTransaction
+        }
+    }
+
+    fun updateFollowersAndFollowing(){
+        // 내페이지를 클릭했을땐 ㄴ ㅐ 페이지
+        firestore?.collection("users")!!.document(selectedUseruid!!).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            if(documentSnapshot == null) return@addSnapshotListener
+
+            // 캐스팅
+            var followDTO = documentSnapshot.toObject(FollowDTO::class.java)
+            if(followDTO?.followingCount != null){
+                fragmentView?.account_following_count?.text = followDTO?.followingCount?.toString()
+            }
+            if(followDTO?.followerCount != null) {
+                fragmentView?.account_follower_count?.text = followDTO?.followerCount?.toString()
+
+                //내가 목록에 있는 경우
+                if(followDTO?.followers?.containsKey(currentUseruid!!)) {
+                    fragmentView?.account_btn_follow_signout?.text = "CANCEL FOLLOW"
+                } else {
+                    if(selectedUseruid != currentUseruid){
+                        fragmentView?.account_btn_follow_signout?.text = "FOLLOW"
+                    }
+                }
             }
         }
     }
