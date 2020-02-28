@@ -1,5 +1,6 @@
 package com.example.hyunndystagram
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +13,15 @@ import com.example.hyunndystagram.navigation.AlarmFragment
 import com.example.hyunndystagram.navigation.GridFragment
 import com.example.hyunndystagram.navigation.HomeFragment
 import com.example.hyunndystagram.navigation.UserFragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.item_detail.*
 
 /*
 //--------------------------------------------------------------------------------------------------
@@ -28,6 +35,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 // @HYEONJIY: BottomNavigationView의 항목들이 눌렸을 때 해당 Fragment로 이동시킬 리스너를 구한다.
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+
+
+    //구글로그인 세션 종료를 위한..
+    var googleSignInClient : GoogleSignInClient? = null
 
     var permission_list = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
@@ -90,6 +101,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottom_navigation.selectedItemId = R.id.action_home
 
         setToolbarDefault()
+
+        // 구글
+        var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
     }
 
     // @HYEONJIY: 툴바 디폴트 ui 설정.
@@ -97,5 +113,31 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         toolbar_username.visibility = View.GONE
         toolbar_btn_back.visibility = View.GONE
         toolbar_title_image.visibility = View.VISIBLE
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // @HYEONJIY: 계정 페이지에서 프로필 사진 바꾸고 다시 홈으로 돌아오면 프로필사진 초기화해야하니까 DB에 userProfileImages를 넣어버린다..
+        if(requestCode == UserFragment.PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK){
+            var imageUri = data?.data
+            var uid = FirebaseAuth.getInstance().currentUser?.uid
+            var storageRef = FirebaseStorage.getInstance().reference.child("userProfileImages").child(uid!!)
+            storageRef.putFile(imageUri!!).continueWithTask {
+
+                return@continueWithTask storageRef.downloadUrl
+            }.addOnSuccessListener {
+                var map = HashMap<String, Any>()
+                map["image"] = it.toString()
+
+                FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        googleSignInClient?.signOut()
     }
 }

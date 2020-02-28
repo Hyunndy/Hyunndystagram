@@ -95,9 +95,16 @@ class HomeFragment : Fragment() {
             // 계정 이메일
             viewholder.home_item_profile_text.text = contentDTOs!![position].userEmail
 
-            // 계정 프로필
-            Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl).into(viewholder.home_item_profile_image)
+            // 계정 프로필 이미지.
+            // UserFragment -> MainActivity에서 profileImages에 저장한걸 여기서 불러쓴다.
+            firestore?.collection("profileImages")?.document(contentDTOs!![position].uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                if(documentSnapshot == null) return@addSnapshotListener
 
+                if(documentSnapshot.data != null){
+                    var url = documentSnapshot?.data!!["image"]
+                    Glide.with(holder.itemView.context).load(url).into(viewholder.home_item_profile_image)
+                }
+            }
             // 올린 이미지
             Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl).into(viewholder.home_item_image_content)
 

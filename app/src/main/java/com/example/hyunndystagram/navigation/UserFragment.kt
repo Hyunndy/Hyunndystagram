@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
+import kotlinx.android.synthetic.main.item_detail.view.*
 
 /*
 //--------------------------------------------------------------------------------------------------
@@ -38,6 +39,11 @@ class UserFragment : Fragment() {
     var fragmentView: View? = null
 
     var currentUseruid: String? = null
+
+
+    companion object{
+        var PICK_PROFILE_FROM_ALBUM = 10
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +64,7 @@ class UserFragment : Fragment() {
 
         fragmentView?.account_recyclerView?.adapter = UserFragmentRecyclerViewAdapter()
         fragmentView?.account_recyclerView?.layoutManager = GridLayoutManager(activity!!, 3)
+
         return fragmentView
     }
 
@@ -111,17 +118,24 @@ class UserFragment : Fragment() {
     // @HYEONJIY: 내 계정인지 다른 사람 계정 상세페이지인지 구분
     private fun checkAccountMaster(view: View?) {
 
+        // 만약 선택한 계정과 내 계정이 같다면
         if (selectedUseruid == currentUseruid) {
 
-            // 만약 선택한 계정과 내 계정이 같다면 로그아웃 화면으로 넘어간다.
+            // LOGOUT 버튼 클릭 시 로그아웃 화면으로 넘어간다.
             view?.account_btn_follow_signout?.text = getString(R.string.signout)
             view?.account_btn_follow_signout?.setOnClickListener {
                 // 이 Fragment가 실행되는 Activity를 강제 종료.
                 activity?.finish()
-
                 // 로그인 페이지로 돌아간다.
                 startActivity(Intent(activity, LoginActivity::class.java))
                 auth?.signOut()
+            }
+
+            // 내 계정이라면 계정 프로필 클릭 시 프로필 이미지 선택.
+            view?.account_iv_profile?.setOnClickListener {
+                var photoPickerIntent = Intent(Intent.ACTION_PICK)
+                photoPickerIntent.type = "image/*"
+                activity?.startActivityForResult(photoPickerIntent, PICK_PROFILE_FROM_ALBUM)
             }
         }
         // 만약 다른이의 계정이라면..!
@@ -146,6 +160,16 @@ class UserFragment : Fragment() {
         mainActivity?.toolbar_title_image?.visibility = View.GONE
         mainActivity?.toolbar_username?.visibility = View.VISIBLE
         mainActivity?.toolbar_btn_back?.visibility = View.VISIBLE
+
+        // 프로필 이미지 가져오기.
+        firestore?.collection("profileImages")?.document(selectedUseruid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            if(documentSnapshot == null) return@addSnapshotListener
+
+            if(documentSnapshot.data != null){
+                var url = documentSnapshot?.data!!["image"]
+                Glide.with(activity!!).load(url).into(fragmentView?.account_iv_profile!!)
+            }
+        }
     }
 }
 
