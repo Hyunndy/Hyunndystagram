@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical">
+
+        <!-- 계정 프로필 -->
+        <ImageView
+            android:id="@+id/home_item_profile_image"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="7.5dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <!-- 계정 이름 -->
+        <TextView
+            android:id="@+id/home_item_profile_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User_name" />
+    </LinearLayout>
+
+    <!-- 업로드한 사진 -->
+    <ImageView
+        android:id="@+id/home_item_image_content"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical">
+
+        <!-- 좋아요 버튼 -->
+        <ImageView
+            android:id="@+id/home_item_favorite_btn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/ic_favorite_border" />
+
+        <!-- 댓글 버튼 -->
+        <ImageView
+            android:id="@+id/home_item_comment_btn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/ic_chat_black" />
+    </LinearLayout>
+
+    <!-- 좋아요 수 -->
+    <TextView
+        android:id="@+id/home_item_favorite_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:text="like 0" />
+
+    <!-- 업로드한 글 내용 -->
+    <TextView
+        android:id="@+id/home_item_comment_explain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:text="Explain_content" />
+</LinearLayout>

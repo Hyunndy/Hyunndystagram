@@ -1,8 +1,12 @@
 package com.example.hyunndystagram
 
+import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.hyunndystagram.navigation.AlarmFragment
 import com.example.hyunndystagram.navigation.GridFragment
 import com.example.hyunndystagram.navigation.HomeFragment
@@ -10,8 +14,20 @@ import com.example.hyunndystagram.navigation.UserFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
+/*
+//--------------------------------------------------------------------------------------------------
+작성자: HYEONJIY
+작성일: 2020.02.29
+클래스명: MainActivity
+설명: 네비게이션바 리스너를 통해 각 Fragment로의 연결, 실제 내용이 들어가는 Layout이 들어있는 Class.
+//--------------------------------------------------------------------------------------------------
+ */
+
+
 // @HYEONJIY: BottomNavigationView의 항목들이 눌렸을 때 해당 Fragment로 이동시킬 리스너를 구한다.
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+
+    var permission_list = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -30,6 +46,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
             // 갤러리로 부터 사진 가져오기
             R.id.action_add_photo -> {
+                if(ContextCompat.checkSelfPermission(this, permission_list[0]) == PERMISSION_GRANTED) {
+                    startActivity(Intent(this, AddPhotoActivity::class.java))
+                }
                 return true
             }
             // 좋아요 알림 화면
@@ -54,5 +73,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         // 리스너 세팅.
         bottom_navigation.setOnNavigationItemSelectedListener(this)
+
+        // 권한 요청
+        ActivityCompat.requestPermissions(this, permission_list, 1)
+
+        // 기본 화면 설정
+        bottom_navigation.selectedItemId = R.id.action_home
     }
 }
