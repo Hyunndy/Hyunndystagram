@@ -69,3 +69,13 @@ Intent에 type을 지정해서 원하는 데이터에만 접근.. 갤러리라�
 
 16. Firebase의 Transaction. db읽기/쓰기 작업의 총괄
 
+17. Arguments
+
+자바스크립트에서는 함수를 호출할 때 인수들과 함께 암묵적으로 arguments 객체가 함수 내부로 전달된다.
+arguments 객체는 함수를 호출할 때 넘긴 인자들이 배열 형태로 저장된 객체를 의미한다.
+특이한 점은 실재 배열이 아닌 마치 배열 형태처럼 숫자로 인덱싱된 프로퍼티가 있는 객체다.
+이러한 객체를 배열과 유사하다 하여 앞으로 유사 배열 객체라고 부르겠다.
+
+18. Fragment에서 다른 Fragment로 데이터를 전달할 때.
+Bundle객체를 생성해서 "key"와 넣을 "Data"를 Bundle에 PutXxx()해준다.
+전달하고싶은 Fragment의 arguments에 Bundle을 넣고, 전달받은 Fragmnet에서는 arguments.getXXX("key")로 꺼내 쓴다.
