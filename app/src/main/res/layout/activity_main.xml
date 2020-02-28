@@ -18,6 +18,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <!-- 백 버튼 -->
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="22dp"
+                android:src="@drawable/ic_arrow_back"
+                android:id="@+id/toolbar_btn_back"
+                />
+
+            <!-- 백 버튼 옆의 계정명  -->
+            <TextView
+                android:id="@+id/toolbar_username"
+                android:layout_toRightOf="@id/toolbar_btn_back"
+                android:gravity="center"
+                android:textColor="@color/colorNavIcon"
+                android:textSize="16sp"
+                android:text="userID"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+
             <!-- 툴바에 넣을 이미지 세팅 -->
             <ImageView
                 android:id="@+id/toolbar_title_image"

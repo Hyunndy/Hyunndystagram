@@ -5,6 +5,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.hyunndystagram.navigation.AlarmFragment
@@ -12,6 +13,7 @@ import com.example.hyunndystagram.navigation.GridFragment
 import com.example.hyunndystagram.navigation.HomeFragment
 import com.example.hyunndystagram.navigation.UserFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 
 /*
@@ -30,8 +32,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     var permission_list = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        setToolbarDefault()
 
+        when(item.itemId){
             // 홈 화면.
             R.id.action_home -> {
                 var homeFragment = HomeFragment()
@@ -57,9 +60,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 supportFragmentManager.beginTransaction().replace(R.id.main_content, alarmFragment).commit()
                 return true
             }
-            // 계정 상세 정보 화면
+            // "본인의" 계정 상세 정보 화면
             R.id.action_account -> {
                 var userFragment = UserFragment()
+
+                var bundle = Bundle()
+                bundle.putString("destinationUid", FirebaseAuth.getInstance().currentUser?.uid)
+                bundle.putString("userEmail", FirebaseAuth.getInstance().currentUser?.email)
+                userFragment.arguments = bundle
+
                 supportFragmentManager.beginTransaction().replace(R.id.main_content, userFragment).commit()
                 return true
             }
@@ -79,5 +88,14 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         // 기본 화면 설정
         bottom_navigation.selectedItemId = R.id.action_home
+
+        setToolbarDefault()
+    }
+
+    // @HYEONJIY: 툴바 디폴트 ui 설정.
+    private fun setToolbarDefault(){
+        toolbar_username.visibility = View.GONE
+        toolbar_btn_back.visibility = View.GONE
+        toolbar_title_image.visibility = View.VISIBLE
     }
 }

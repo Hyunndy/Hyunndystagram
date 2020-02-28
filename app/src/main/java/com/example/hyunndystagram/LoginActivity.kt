@@ -85,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
             }
             // 이미 계정이 있는 경우
             else {
-                signinEmail()
+                signInEmail()
             }
         }
     }
@@ -137,7 +137,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     //{{ @HYEONJIY: 기존 사용자 로그인
-    private fun signinEmail() {
+    private fun signInEmail() {
 
         // 이메일 주소와 비밀번호의 유효성을 검사하는 함수
         auth?.signInWithEmailAndPassword(email_edittext.text.toString(), password_edittext.text.toString())?.addOnCompleteListener { task ->
@@ -150,4 +150,10 @@ class LoginActivity : AppCompatActivity() {
         }
     }
     //}} @HYEONJIY
+
+    override fun onStart() {
+        super.onStart()
+
+        moveMainPage(auth?.currentUser)
+    }
 }

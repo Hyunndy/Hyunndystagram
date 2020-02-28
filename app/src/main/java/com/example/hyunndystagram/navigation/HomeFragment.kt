@@ -13,6 +13,7 @@ import com.example.hyunndystagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.item_detail.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
 /*
@@ -64,6 +65,7 @@ class HomeFragment : Fragment() {
                 contentDTOs.clear()
                 contentUidList.clear()
 
+                if(querySnapshot == null) return@addSnapshotListener
                 // AddPhotoActivity에서 documents에 contentDTO를 저장했음.
                 for(snapshot in querySnapshot!!.documents) {
 
@@ -106,6 +108,8 @@ class HomeFragment : Fragment() {
             viewholder.home_item_favorite_counter.text = "Likes +" + contentDTOs[position]!!.favoriteCount
 
             setFavoriteBtn(viewholder, position)
+
+            setDataForAccountInfo(viewholder, position)
         }
 
         override fun getItemCount(): Int {
@@ -151,6 +155,23 @@ class HomeFragment : Fragment() {
 
                 // DB의 tsDoc 참조에 contentDTO를 새로 써넣어!
                 transaction.set(tsDoc, contentDTO)
+            }
+        }
+
+        // @HYEONJIY: 각 항목의 프로필 사진을 누르면 계정 상세 페이지로 갈 수 있게 UserFragment에 전달할 Bundle을 세팅한다.
+        private fun setDataForAccountInfo(viewHolder : View, position: Int){
+
+            viewHolder.home_item_profile_image.setOnClickListener {
+                // 계정 상세 페이지 Fragment
+                var fragment = UserFragment()
+
+                var bundle = Bundle()
+                bundle.putString("destinationUid", contentDTOs[position].uid)
+                bundle.putString("userEmail", contentDTOs[position].userEmail)
+                fragment.arguments = bundle
+
+                // 상세 페이지로 이동!
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content, fragment)?.commit()
             }
         }
     }
