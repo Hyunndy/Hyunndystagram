@@ -59,3 +59,13 @@ Intent에 type을 지정해서 원하는 데이터에만 접근.. 갤러리라�
 13. FirebaseFirestore는 진짜 DB/ FirebaseStorage는 데이터를 저장하는 버킷.
 
 14. Firebase에 이미지를 업로드하는 방식에는 1.PromiseMethod , 2. CallbackMethod가 있는데 구글이 권장하는건 Promise
+
+15. RecyclerView.
+어댑터(Adapter) : 사용자 데이터 리스트로부터 아이템 뷰를 생성하는 역할. 데이터 목록을 아이템 단위의 뷰로 구성하여 화면에 표시하기 위해 사용. 
+레이아웃매니저(LayoutManager) : 아이템 뷰가 나열되는 형태를 관리하기 위한 구성요소.
+뷰홀더(ViewHolder) : 화면에 표시될 아이템 뷰를 저장하는 객체. 레이아웃 매니저가 제공하는 레이아웃 형태로, 어댑터를 통해 만들어진 각 아이템뷰는 뷰 홀더 객체에 저장되어 화면에 표시되고 필요에 따라 재생성또는 재활용된다.
+
+미리 생성된 view가 있을 경우 이미 만들어진 뷰홀더에 바인딩한다.
+
+16. Firebase의 Transaction. db읽기/쓰기 작업의 총괄
+
