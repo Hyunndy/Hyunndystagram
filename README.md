@@ -79,3 +79,7 @@ arguments 객체는 함수를 호출할 때 넘긴 인자들이 배열 형태로
 18. Fragment에서 다른 Fragment로 데이터를 전달할 때.
 Bundle객체를 생성해서 "key"와 넣을 "Data"를 Bundle에 PutXxx()해준다.
 전달하고싶은 Fragment의 arguments에 Bundle을 넣고, 전달받은 Fragmnet에서는 arguments.getXXX("key")로 꺼내 쓴다.
+
+19. FirebaseFirestore의 collection("collectionPath")
+새 폴더를 생성/데이터 넣고 싶을땐 .set
+그 안의 데이터를 순회하고싶을 땐 addSnapshotListner.
