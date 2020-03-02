@@ -1,5 +1,6 @@
 package com.example.hyunndystagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.hyunndystagram.CommentActivity
 import com.example.hyunndystagram.R
 import com.example.hyunndystagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -114,13 +116,26 @@ class HomeFragment : Fragment() {
             // 좋아요 수
             viewholder.home_item_favorite_counter.text = "Likes +" + contentDTOs[position]!!.favoriteCount
 
+            // 좋아요 버튼 리스너 새팅
             setFavoriteBtn(viewholder, position)
+
+            // 댓글 버튼 리스너 세팅
+            setCommentBtn(viewholder, position)
 
             setDataForAccountInfo(viewholder, position)
         }
 
         override fun getItemCount(): Int {
             return contentDTOs.size
+        }
+
+        // @HYEONJIY: 말풍선 버튼을 클릭하면 CommentActivity가 뜨도록. 이 때 이 게시글의 상세정보를 CommentActivity에 넘겨주어야 합니다.
+        private fun setCommentBtn(viewHolder: View, position: Int) {
+            viewHolder.home_item_comment_btn.setOnClickListener {
+                var intent = Intent(viewHolder.context, CommentActivity::class.java)
+                intent.putExtra("contentUid", contentUidList[position]) // uid값 전달.
+                startActivity(intent)
+            }
         }
 
         private fun setFavoriteBtn(viewHolder : View, position: Int){

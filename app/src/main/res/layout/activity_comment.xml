@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CommentActivity">
+
+    <!-- 맨 위에 툴바 -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="35dp">
+
+        <!-- 툴바에 넣을 이미지 세팅 -->
+        <ImageView
+            android:id="@+id/toolbar_title_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_margin="1dp"
+            android:src="@drawable/logo_title" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- 툴바 - 내용을 구분짓는 선 -->
+    <LinearLayout
+        android:id="@+id/toolbar_division"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/my_toolbar"
+        android:background="@color/colorPrimaryDark"
+        android:orientation="horizontal"/>
+
+    <!-- 댓글들 -> item_comment.xml -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/comment_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/toolbar_division"
+        android:layout_marginBottom="30dp"/>
+
+    <!-- 새 댓글을 달 버튼 -->
+    <Button
+        android:id="@+id/comment_btn_send"
+        android:text="@string/send"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/comment_recyclerView"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- 새 댓글을 적을 EditText -->
+    <EditText
+        android:id="@+id/comment_edit_message"
+        android:layout_toLeftOf="@id/comment_btn_send"
+        android:layout_below="@id/comment_recyclerView"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>
