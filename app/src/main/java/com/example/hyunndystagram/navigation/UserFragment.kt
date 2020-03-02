@@ -17,6 +17,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.hyunndystagram.LoginActivity
 import com.example.hyunndystagram.MainActivity
 import com.example.hyunndystagram.R
+import com.example.hyunndystagram.navigation.model.AlarmDTO
 import com.example.hyunndystagram.navigation.model.ContentDTO
 import com.example.hyunndystagram.navigation.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -197,6 +198,8 @@ class UserFragment : Fragment() {
                 followDTO!!.followingCount = 1
                 followDTO!!.followings[selectedUseruid!!] = true
 
+                // 좋아요 알람!
+                followAlarm(selectedUseruid!!)
                 // Firebase DB에 이 내용을 넣어주고 돌아가자.
                 transaction.set(tsDocFollowing, followDTO)
                 return@runTransaction
@@ -214,6 +217,8 @@ class UserFragment : Fragment() {
                 followDTO?.followings[selectedUseruid!!] = true
             }
 
+            // 좋아요 알람!
+            followAlarm(selectedUseruid!!)
             transaction.set(tsDocFollowing, followDTO)
             return@runTransaction
         }
@@ -282,6 +287,16 @@ class UserFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun followAlarm(destinationUid : String) {
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userEmail = auth?.currentUser?.email
+        alarmDTO.uid = auth?.currentUser?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
     }
 }
 

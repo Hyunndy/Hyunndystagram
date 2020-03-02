@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hyunndystagram.CommentActivity
 import com.example.hyunndystagram.R
+import com.example.hyunndystagram.navigation.model.AlarmDTO
 import com.example.hyunndystagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -56,6 +57,7 @@ class HomeFragment : Fragment() {
 
         // AddPhotoActivity -> FirebaseDB로 저장된 contentDTO를 가져오는 배열.
         var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
+
         // AddPhotoActivity -> FirebaseDB로 저장된 uid를 가져오는 배열.
         var contentUidList : ArrayList<String> = arrayListOf()
 
@@ -133,7 +135,8 @@ class HomeFragment : Fragment() {
         private fun setCommentBtn(viewHolder: View, position: Int) {
             viewHolder.home_item_comment_btn.setOnClickListener {
                 var intent = Intent(viewHolder.context, CommentActivity::class.java)
-                intent.putExtra("contentUid", contentUidList[position]) // uid값 전달.
+                intent.putExtra("contentUid", contentUidList[position]) // 댓글 다는 자 uid값 전달.
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
                 startActivity(intent)
             }
         }
@@ -173,6 +176,9 @@ class HomeFragment : Fragment() {
                 else {
                     contentDTO?.favoriteCount =  contentDTO?.favoriteCount + 1
                     contentDTO?.favorites[currentUseruid!!] = true
+
+                    // 좋아요 알람도 울린다.
+                    FavoriteAlarm(contentDTOs[position].uid!!)
                 }
 
                 // DB의 tsDoc 참조에 contentDTO를 새로 써넣어!
@@ -195,6 +201,20 @@ class HomeFragment : Fragment() {
                 // 상세 페이지로 이동!
                 activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content, fragment)?.commit()
             }
+        }
+
+        // @HYEONJIY: 좋아요 알림 메세지
+        private fun FavoriteAlarm(destinationUid : String) {
+
+            var alarmDTO = AlarmDTO()
+
+            alarmDTO.destinationUid = destinationUid
+
+            alarmDTO.userEmail = FirebaseAuth.getInstance().currentUser?.email
+            alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
+            alarmDTO.kind = 0
+            alarmDTO.timestamp = System.currentTimeMillis()
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
         }
     }
 }
